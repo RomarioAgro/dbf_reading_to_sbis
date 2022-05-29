@@ -5,10 +5,6 @@ import os
 dbf таблица с вот такой структурой: SKLADNAIM,C,150	KOD,N,6,0	SKLKOD,C,3	ORG,C,150	INN,N,12,0
 скрипт разбирает dbf таблицу, и группирует склады которые принадлежат одной организации, группировка на основе инн
 а группировка в виде буквенный код склада: цифровые коды складов-коллег из родной организации
-
-dbf table with this structure: SKLADNAIM,C,150 KOD,N,6,0 SKL KOD,C,3 ORG,C,150 IN,N,12,0
-the script parses the dbf table, and groups warehouses that belong to the same organization, grouping based on information
-and grouping in the form of a letter code warehouse: digital codes of warehouses-colleagues from the native organization
 """
 # dict = {
 #     '5902025531': [{
