@@ -80,7 +80,7 @@ def write_file(f_name, i_dict):
         file.write('ВыборПо(пКАСНОМ)\n')
         file.write('{\n')
         for key, val in i_dict.items():
-            file.write(f'Выбор "{key}":Вернуть("{val}")\n')
+            file.write('Выбор "{}":Вернуть("{}")\n'.format(key, val))
         file.write('}\n')
         file.write('}\n')
 
