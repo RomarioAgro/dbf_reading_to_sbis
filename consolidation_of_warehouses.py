@@ -67,10 +67,12 @@ def letter_kod_all_numeric_kod(list_numeric=[]):
 
 
 def consolidation_of_warehouses(i_dict={}):
+    # {'5902025531': [{'letter_kod': 'PV', 'numeric_kod': '96'}, {'letter_kod': 'PH', 'numeric_kod': '102'}, {'letter_kod': 'EG', 'numeric_kod': '886'},]}
     o_dict = {}
     # на выходе у нас получается словарь вида BC: ;96;102;886;898;909;142;143;8;24;40;66;78;79;85;
     # ключ - буквенный код склада, а значения цифровые коды его коллег-складов из этой же организации
-    for key, val in i_dict.items():
+    print(i_dict.values())
+    for val in i_dict.values():
         for k in val:
             o_dict[k['letter_kod']] = letter_kod_all_numeric_kod(val)
             # если нашли в нашей строке сепаратор, то разбиваем по нему строку и добавляем новое значение в выходной словарь
