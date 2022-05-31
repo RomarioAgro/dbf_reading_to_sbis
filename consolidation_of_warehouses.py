@@ -68,20 +68,26 @@ def letter_kod_all_numeric_kod(list_numeric=[]):
 
 def consolidation_of_warehouses(i_dict={}):
     o_dict = {}
-    # на выходе у нас получается словарь вида BC: ;96;102;886;898;909;142;143;8;24;40;66;78;79;85;
+    # на выходе у нас получается словарь вида 'BC': ';96;102;886;898;909;142;143;8;24;40;66;78;79;85;'
     # ключ - буквенный код склада, а значения цифровые коды его коллег-складов из этой же организации
-    for key, val in i_dict.items():
+    list_d = dict()
+    for val in i_dict.values():
+        # list_a = set(map(lambda x: x['letter_kod'], val))
+        # list_b = set(map(lambda x: x['numeric_kod'], val))
+        # list_d.update({k: list_b for k in list_a})
+        # list_d.update({k: ';' + ';'.join(list_b) + ';' for k in list_a})
+        list_d.update({k: ';' + ';'.join(set(map(lambda x: x['numeric_kod'], val))) + ';' for k in
+                       set(map(lambda x: x['letter_kod'], val))})
         for k in val:
-            o_dict[k['letter_kod']] = letter_kod_all_numeric_kod(val)
+            o_dict[k['letter_kod']] = ';'.join(list(map(lambda x: x['numeric_kod'], val)))
             # если нашли в нашей строке сепаратор, то разбиваем по нему строку и добавляем новое значение в выходной словарь
-            if o_dict[k['letter_kod']].find(';separator;') != -1:
-                rezerv = o_dict[k['letter_kod']].partition(';separator;')
-                o_dict[k['letter_kod']] = rezerv[0]
-                o_dict[k['letter_kod'] + '2'] = ';' + rezerv[2]
-
+            # if o_dict[k['letter_kod']].find(';separator;') != -1:
+            #     rezerv = o_dict[k['letter_kod']].partition(';separator;')
+            #     o_dict[k['letter_kod']] = rezerv[0]
+            #     o_dict[k['letter_kod'] + '2'] = ';' + rezerv[2]
+    print(list_d)
     def function(x):
         return x[0]
-
     out_dict = dict(sorted(o_dict.items(), key=function))
     return out_dict
 
