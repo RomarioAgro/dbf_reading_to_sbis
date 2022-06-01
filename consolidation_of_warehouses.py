@@ -1,4 +1,6 @@
 import dbf
+import time
+
 
 """
 dbf таблица с вот такой структурой: SKLADNAIM,C,150	KOD,N,6,0	SKLKOD,C,3	ORG,C,150	INN,N,12,0
