@@ -1,5 +1,4 @@
 import dbf
-import time
 
 """
 dbf таблица с вот такой структурой: SKLADNAIM,C,150	KOD,N,6,0	SKLKOD,C,3	ORG,C,150	INN,N,12,0
@@ -71,7 +70,6 @@ def read_dbf(f_name):
 
 def consolidation_of_warehouses(i_dict={}):
     o_dict = {}
-    # time.sleep(1)
     # на выходе у нас получается словарь вида 'BC': ';96;102;886;898;909;142;143;8;24;40;66;78;79;85;'
     # ключ - буквенный код склада, а значения цифровые коды его коллег-складов из этой же организации
     for val in i_dict.values():
