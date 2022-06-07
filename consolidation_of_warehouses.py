@@ -36,13 +36,13 @@ def time_track(func):
         ended_at = time.time()
         print(ended_at)
         elapsed = round(ended_at - started_at, 10)
-        print(f'Функция работала {elapsed} секунд(ы)')
+        print('Функция работала {} секунд(ы)'.format(elapsed))
         return result
 
     return surrogate
 
 
-@time_track
+# @time_track
 def read_dbf(f_name):
     # читаем наш dbf построчно, на выходе у нас будет словаь, ключами в словаре ИНН организации,
     # значения ключей это список словарей [{буквенный код:, цифровой код:}, {буквенный код:, цифровой код:}]
