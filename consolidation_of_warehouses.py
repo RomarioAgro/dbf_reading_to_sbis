@@ -59,6 +59,7 @@ def read_dbf(f_name):
         i_dict = {
             'letter_kod': sklkod,
             'numeric_kod': str(line.KOD),
+            'inn': str(line.INN)
         }
 
         if sklad_dict.get(inn, None) is not None:
@@ -91,6 +92,15 @@ def letter_kod_to_numeric_kod(i_dict={}):
     out_dict = dict(sorted(o_dict.items(), key=lambda x: x[0]))
     return out_dict
 
+def letter_kod_to_inn_kod(i_dict={}):
+    o_dict = {}
+    # на выходе у нас получается словарь вида 'BC': '5902025531'
+    # ключ - буквенный код склада, а значение ИНН организации
+    for val in i_dict.values():
+        o_dict.update({k['letter_kod']: k['inn'] for k in val})
+    out_dict = dict(sorted(o_dict.items(), key=lambda x: x[0]))
+    return out_dict
+
 def write_file(f_name, i_dict, heading, mode_open):
     with open(f_name, mode_open, encoding='cp866') as file:
         file.write('Функция {}\n'.format(heading))
@@ -118,5 +128,7 @@ file_name = 'ORG_SHOP.DBF'
 inn_org_sklad_dict = read_dbf(file_name)
 sklad_dict = consolidation_of_warehouses(i_dict=inn_org_sklad_dict)
 letter_to_numeric_dict = letter_kod_to_numeric_kod(i_dict=inn_org_sklad_dict)
+letter_to_inn_dict = letter_kod_to_inn_kod(i_dict=inn_org_sklad_dict)
 write_file('_massivskladi.prg', sklad_dict, '_МассивСкладыВыбор(пКАСНОМ)', 'w')
 write_file('_massivskladi.prg', letter_to_numeric_dict, '_МассивСкладКод(пКАСНОМ)', 'a')
+write_file('_massivskladi.prg', letter_to_inn_dict, '_МассивСкладКодвИНН(пКАСНОМ)', 'a')
