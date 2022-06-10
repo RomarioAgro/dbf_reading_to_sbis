@@ -115,7 +115,7 @@ def write_file(f_name, i_dict, heading, mode_open):
                 sep_finish_index = val.find(';', sep_start_index + 10)
                 slice_s = val[sep_start_index:sep_finish_index]
                 rezerv = val.partition(slice_s)
-                file.write('Выбор "{}":Вернуть("{}")\n'.format(key, rezerv[0]))
+                file.write('Выбор "{}":Вернуть("{};")\n'.format(key, rezerv[0]))
                 file.write('Выбор "{}":Вернуть("{}")\n'.format(key + '2', rezerv[1] + ';' + rezerv[2]))
 
         file.write('}\n')
