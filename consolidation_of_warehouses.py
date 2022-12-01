@@ -1,5 +1,5 @@
 import dbf
-import time
+from typing import Dict
 
 
 """
@@ -27,25 +27,15 @@ and grouping in the form of a letter code warehouse: digital codes of warehouses
 #     ]
 # }
 
-def time_track(func):
-    def surrogate(*args, **kwargs):
-        started_at = time.time()
-        print(started_at)
-        result = func(*args, **kwargs)
 
-        ended_at = time.time()
-        print(ended_at)
-        elapsed = round(ended_at - started_at, 10)
-        print('Функция работала {} секунд(ы)'.format(elapsed))
-        return result
-
-    return surrogate
-
-
-# @time_track
-def read_dbf(f_name):
-    # читаем наш dbf построчно, на выходе у нас будет словаь, ключами в словаре ИНН организации,
-    # значения ключей это список словарей [{буквенный код:, цифровой код:}, {буквенный код:, цифровой код:}]
+def read_dbf(f_name: str = '') -> Dict:
+    """
+    читаем наш dbf построчно, на выходе у нас будет словаь, ключами в словаре ИНН организации,
+    значения ключей это список словарей [{буквенный код:, цифровой код:}, {буквенный код:, цифровой код:}]
+    :param f_name: имя файла dbf
+    :param f_name: str
+    :return: dict
+    """
     sklad_dict = {}
     f_dbf = dbf.Table(f_name)
     f_dbf.open(dbf.READ_ONLY)
@@ -71,37 +61,64 @@ def read_dbf(f_name):
     return sklad_dict
 
 
-def consolidation_of_warehouses(i_dict={}):
-    o_dict = {}
-    # на выходе у нас получается словарь вида 'BC': ';96;102;886;898;909;142;143;8;24;40;66;78;79;85;'
-    # ключ - буквенный код склада, а значения цифровые коды его коллег-складов из этой же организации
+def consolidation_of_warehouses(i_dict: dict = {}) -> Dict:
+    """
+    на выходе у нас получается словарь вида 'BC': ';96;102;886;898;909;142;143;8;24;40;66;78;79;85;'
+    ключ - буквенный код склада, а значения цифровые коды его коллег-складов из этой же организации
+    :param i_dict: входной словарь из dbf файла ключ ИНН организации,
+    а значение список[цифровой код склада, буквенный код склада, название ]
+    :param i_dict: dict
+    :return: dict буквенный код склада, и цифровые коды его коллег куда можно отправлять товар
+    """
+    o_dict = dict()
     for val in i_dict.values():
         o_dict.update({k: ';' + ';'.join(set(map(lambda x: x['numeric_kod'], val))) + ';' for k in
                        set(map(lambda x: x['letter_kod'], val))})
-
     out_dict = dict(sorted(o_dict.items(), key=lambda x: x[0]))
-    # print(o_dict)
     return out_dict
 
-def letter_kod_to_numeric_kod(i_dict={}):
+
+def letter_kod_to_numeric_kod(i_dict={}) -> Dict:
+    """
+    на выходе у нас получается словарь вида 'BC': '96'
+    ключ - буквенный код склада, а значение его цифровой код
+    :param i_dict: входной словарь из dbf файла ключ ИНН организации,
+    а значение список[цифровой код склада, буквенный код склада, название ]
+    :param i_dict: dict
+    :return: dict
+    """
     o_dict = {}
-    # на выходе у нас получается словарь вида 'BC': '96'
-    # ключ - буквенный код склада, а значение его цифровой код
     for val in i_dict.values():
         o_dict.update({k['letter_kod']: k['numeric_kod'] for k in val})
     out_dict = dict(sorted(o_dict.items(), key=lambda x: x[0]))
     return out_dict
 
-def letter_kod_to_inn_kod(i_dict={}):
-    o_dict = {}
+
+def letter_kod_to_inn_kod(i_dict={}) -> Dict:
+    """
     # на выходе у нас получается словарь вида 'BC': '5902025531'
     # ключ - буквенный код склада, а значение ИНН организации
+    :param i_dict: входной словарь из dbf файла ключ ИНН организации,
+    а значение список[цифровой код склада, буквенный код склада, название ]
+    :param i_dict: dict
+    :return: dict
+    """
+    o_dict = {}
     for val in i_dict.values():
         o_dict.update({k['letter_kod']: k['inn'] for k in val})
     out_dict = dict(sorted(o_dict.items(), key=lambda x: x[0]))
     return out_dict
 
-def write_file(f_name, i_dict, heading, mode_open):
+
+def write_file(f_name, i_dict, heading, mode_open) -> None:
+    """
+    сохранение наших словарей в функции
+    :param f_name: str имя файла куда будем сохранять
+    :param i_dict: dict что будем сохранять
+    :param heading: str заголовок псевдо функции сбис
+    :param mode_open: str режим сохранения файла
+    :return:
+    """
     with open(f_name, mode_open, encoding='cp866') as file:
         file.write('Функция {}\n'.format(heading))
         file.write('{\n')
@@ -123,12 +140,16 @@ def write_file(f_name, i_dict, heading, mode_open):
         file.write('\n')
 
 
-file_name = 'ORG_SHOP.DBF'
+def main():
+    file_name = 'ORG_SHOP.DBF'
+    inn_org_sklad_dict = read_dbf(file_name)
+    sklad_dict = consolidation_of_warehouses(i_dict=inn_org_sklad_dict)
+    letter_to_numeric_dict = letter_kod_to_numeric_kod(i_dict=inn_org_sklad_dict)
+    letter_to_inn_dict = letter_kod_to_inn_kod(i_dict=inn_org_sklad_dict)
+    write_file('_massivskladi.prg', sklad_dict, '_МассивСкладыВыбор(пКАСНОМ)', 'w')
+    write_file('_МассивСкладКод.prg', letter_to_numeric_dict, '_МассивСкладКод(пКАСНОМ)', 'w')
+    write_file('_МассивСкладКодвИНН.prg', letter_to_inn_dict, '_МассивСкладКодвИНН(пКАСНОМ)', 'w')
 
-inn_org_sklad_dict = read_dbf(file_name)
-sklad_dict = consolidation_of_warehouses(i_dict=inn_org_sklad_dict)
-letter_to_numeric_dict = letter_kod_to_numeric_kod(i_dict=inn_org_sklad_dict)
-letter_to_inn_dict = letter_kod_to_inn_kod(i_dict=inn_org_sklad_dict)
-write_file('_massivskladi.prg', sklad_dict, '_МассивСкладыВыбор(пКАСНОМ)', 'w')
-write_file('_massivskladi.prg', letter_to_numeric_dict, '_МассивСкладКод(пКАСНОМ)', 'a')
-write_file('_massivskladi.prg', letter_to_inn_dict, '_МассивСкладКодвИНН(пКАСНОМ)', 'a')
+
+if __name__ == '__main__':
+    main()
